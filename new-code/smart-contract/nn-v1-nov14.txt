@@ -1,0 +1,230 @@
+pragma solidity 0.7.0;
+
+contract find{
+    int x;int[]  z_num; int[]  z_den; int anum; int aden;
+    int yhnum; int yhden; int[] y_diff_num; int[] y_diff_den;
+    
+    int[] delta_w_num; int[] delta_w_den; int del_bnum; int del_bden;
+    int lr_num; int lr_den;
+    
+    int[] _wnum; int[] _wden; int _bnum; int _bden;
+    
+    int[] y_hat_num; int[] y_hat_den;
+    int[] mulnum; int[] mulden;
+    
+    constructor(int[] memory wnum, int[] memory wden, int bnum, int bden, int lrn, int lrd){
+      _wnum = wnum;
+      _wden = wden;
+      _bnum = bnum;
+      _bden = bden;
+      lr_num = lrn;
+      lr_den = lrd;
+  }  
+  uint sign; uint sigd; 
+     function pow(uint256 A, uint256 B) public returns (uint256){ 
+        return A**B;
+     }
+    function get_sigmoid_pos( int a, int b) public{
+        uint num; uint den; uint q; uint r; uint x; uint y;
+        
+        if(a/b>=10){
+            num = 1; 
+            den = 1;}
+        else if((a/b)>=9 && (a/b)<10){num = 99988; den = 100000;}
+        else if((a/b)>=8 && (a/b)<9){num = 99966; den = 100000;}
+        else if((a/b)>=7 && (a/b)<8){num = 99909; den = 100000;}
+        else if((a/b)>=6 && (a/b)<7){num = 99753; den = 100000;}
+        else if((a/b)>=5 && (a/b)<6){num = 99331; den = 100000;}
+        else if((a/b)>=1 && (a/b)<5){
+            x = uint(a); y = uint(b);
+            q = x/y; r = x%y;
+            num= pow(19,q)*24*pow(y,4);
+            den= pow(19,q)*24*pow(y,4)+pow(7,q)*(24*pow(y,4)-24*r*pow(y,3)+12*pow(r,2)*pow(y,2)-4*y*pow(r,3)+pow(r,4));  
+        }  
+        else if(a<b && a>0){
+            x = uint(a); y = uint(b);
+            num= 24*pow(y,4);
+            den= 48*pow(y,4)-24*x*pow(y,3)+12*pow(x,2)*pow(y,2)-4*y*pow(x,3)+pow(x,4) ;
+        }
+       sign = num; sigd =den;  
+    }   
+    function get_sigmoid_neg(uint a,uint b) public {    
+        // this works fine uint x; uint y;
+        uint x; uint y; uint q; uint r; uint num; uint den;
+        if(a<b && a>0){
+            x = a; y = b;
+        // x = x * (-1); // this is beacuse we have coded the program in this manner to take positive input becasue solidity does not work with negative power 
+
+        num= 24*pow(y,4);
+        den= 48*pow(y,4)+24*x*pow(y,3)+12*pow(x,2)*pow(y,2)+4*y*pow(x,3)+pow(x,4);
+        }
+        else if(a/b>1 && a/b<=6){
+            x = a; y = b;
+            // x = x*(-1);
+            q = x/y;     
+            r = x%y;
+            num = 24*pow(y,4)*pow(7,q);
+            den = 24*pow(y,4)*pow(7,q)+pow(19,q)*(24*pow(y,4)+24*r*pow(y,3)+12*pow(r,2)*pow(y,2)+4*y*pow(r,3)+pow(r,4));
+            }
+        else if(a/b>6 && a/b<=7){num =15; den= 10000;} 
+        else if(a/b>7 && a/b<=8){num =6; den = 10000;}     
+        else if(a/b>8 && a/b<=9){num =2; den = 10000;} 
+        else if(a/b>9 && a/b<=10){num = 7; den = 100000;}
+        else {num = 0 ; den =1;}
+       sign = num; sigd =den;  
+     }    
+     
+     function set_sigmoid() public view returns(uint,uint){return (sign,sigd);}  
+    function get_lcm(int x, int y) internal returns(int){
+        int greater;  int lcm;
+        if(x>y){ greater =x;}
+        else{ greater =y;}
+        while(true){
+            if(x==0){ lcm = y; break;}
+            else if (y==0){lcm =x; break;}
+            else if(greater%x==0 && greater%y==0) { lcm = greater; break;}
+            greater +=1;
+        }
+        return greater;
+    }
+    function get_larger(int[] memory a) internal returns (int){
+        int big =0;
+        for( uint i =0; i<a.length; i++){
+            if(a[i]>big){ big = a[i];}
+        }
+     x = big;   
+     return big;        
+    } 
+    function print_larger() public view returns(int){return x;}
+    
+    function get_multiply(int[] memory a_num, int[] memory a_den,int[] memory b_num,
+    int[] memory b_den) internal returns(int[] memory,int[] memory) {
+         int num; int den;
+        for( uint i=0; i<a_num.length; i++){
+            int x = a_num[i]*b_num[i];
+            int y = a_den[i]*b_den[i];
+            z_num.push(x); z_den.push(y);   
+        }
+    
+        return (z_num,z_den);
+    }
+    function set_multiplier() public view returns (int[] memory, int[] memory){ return (z_num,z_den);}
+    
+    function get_addition(int a, int b, int c, int d) internal returns(int,int){
+        int num; int den; 
+        den = get_lcm(b,d);
+        if (b==0){num = c ; den = d;}
+        else if (d==0){num= a ; den = b;}
+        else    { num = ((den/b)*a) + ((den/d)*c);}
+        return (num,den);
+    }
+    
+    function get_add_array(int[] memory num, int[] memory den) internal {
+        int lcm; int res_num=0; int res_den=0;
+        lcm = get_larger(den);
+        res_den = lcm;
+        for(uint i =0;i< num.length;i++){
+            res_num = res_num + (lcm/den[i])*num[i];
+        }
+        anum = res_num; aden = res_den;
+    }
+    function set_add_array() public view returns(int,int){
+        return (anum,aden);
+    } 
+    function get_subtraction(int a, int b, int c, int d) internal returns(int,int){
+        int sub_num; int sub_den;
+        sub_den = get_lcm(b,d);
+        if(b==0){sub_num = c ; sub_den = d;}
+        else if (d==0){sub_num= a ; sub_den = b;}
+        else {sub_num = ((sub_den/b)*a) - ((sub_den/d)*c); }
+        return (sub_num,sub_den);
+    }
+    
+    function get_y_hat(int[] memory xnum, int[] memory xden) public {
+        get_multiply(xnum,xden,_wnum,_wden);
+        get_add_array(z_num,z_den);
+        (yhnum,yhden)=get_addition(anum,aden,_bnum,_bden);
+        y_hat_num.push(yhnum); y_hat_den.push(yhden);
+        reset_z_arrays();
+        
+    }
+
+    function get_mse1(int a, int b, int c, int d) public returns(int,int) {
+         int num; int den;
+        (num,den) = get_subtraction(a,b,c,d);
+        anum = num*num;
+        aden = den*den;
+        return (anum,aden);
+
+    }
+    //append to a list for num and den for adding mse values 
+    function get_mse2(int[] memory num, int[] memory den) public returns(int,int){
+        get_add_array(num,den);
+        aden = aden * int(den.length);
+        return(anum,aden);
+    }
+    
+    function set_y_diff() public view returns(int[] memory, int[] memory){ return(y_diff_num, y_diff_den);}
+    function set_mse1() public view returns(int,int){ return (anum,aden);}
+    function set_mse2() public view returns(int,int){ return (anum,aden);}
+    function reset_z_arrays() public{ delete z_num; delete z_den;}
+    function reset_delta_w() public { delete delta_w_num; delete delta_w_den;}
+    function reset_y_diff() public { delete y_diff_num; delete y_diff_den;}
+    function reset_y_hat() public { delete y_hat_num; delete y_hat_den;}
+    function set_delta_w1() public view returns (int,int){ return (anum,aden);}
+    function set_delta_w2() public view returns (int[] memory,int[] memory){ return (delta_w_num,delta_w_den);}
+    function set_delta_b() public view returns (int,int){ return (del_bnum,del_bden);}
+    function set_y_hat() public view returns(int[] memory,int[] memory){ return(y_hat_num,y_hat_den);
+    }
+    //we need to take a transpose of this 
+    // get each of the delta separately
+    // reset znum and zden before thiss step
+    function get_delta_w1(int a, int b, int c, int d ) public returns (int,int){ //later on change the function input to only xnum and xden
+        int x; int y;
+        anum = a *c;
+        aden = b *d;
+    }
+    function get_delta_w2(int[] memory num, int[] memory den)public {
+        get_add_array(num,den);
+        anum = anum *2 *lr_num;
+        aden = aden * int(num.length) * lr_den;
+        delta_w_num.push(anum);
+        delta_w_den.push(aden);
+    }
+        
+    function set_delta_w() public view returns(int[] memory, int[] memory){
+        return (delta_w_num, delta_w_den);
+    }
+    
+    function get_delta_b(int[] memory yd_num,int[] memory yd_den) public {
+        get_add_array(yd_num,yd_den);
+        anum = anum *2;
+        int n = int(yd_num.length);
+        aden = aden *n;
+        del_bnum = anum; 
+        del_bden = aden;
+    }
+    
+    // function set_delta_b() public view returns(int,int){ return (del_bnum,del_bden);}
+    
+   //delta w already defined earlier, following function is a test function
+    function get_new_weights( int[] memory delw_num, int[] memory delw_den) public  {
+        for (uint i=0;i<delw_num.length; i++){
+            (_wnum[i], _wden[i]) = get_subtraction(_wnum[i],_wden[i],delw_num[i],delw_den[i]);
+        }
+    }
+    function get_new_bias(int lrn, int lrd, int dbnum, int dbden) public {
+        int btemp_num; int btemp_den;
+        btemp_num = lr_num * dbnum;
+        btemp_den = lr_den * dbden;
+        (_bnum,_bden) = get_subtraction(_bnum,_bden,btemp_num,btemp_den);
+        // reset_delta_w();
+        // reset_y_diff();
+        // reset_y_hat();
+    }
+    
+    
+    function set_new_parameters() public view returns(int[] memory, int[] memory, int,int ){
+        return(_wnum, _wden, _bnum, _bden);
+    }
+}
