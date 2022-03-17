@@ -1,0 +1,31 @@
+pragma solidity 0.5.5;
+contract test{
+uint q; uint r; int en = 19; int ed =7; uint num; uint den;  
+
+int n ; int d;
+   function exp(int x, int y, uint a, uint b ) public {
+    //    q = x/y;
+    //    r = x%y;
+       q = a/b;
+       r = a%b;
+       if((x/y>0  && x>0 && y>0) || (x/y==0 && x<0 && y<0) || (x/y==0 && x>0 && y>0)||(x/y>0  && x<0 && y<0)){
+         num = 7**q*24*b**4;
+         den = 19**q*(24*b**4+r*24*b**3+12*r**2*b**2+4*b*r**3+b**4);
+       }
+       else {
+         num = 19**q*(24*b**4+r*24*b**3+12*r**2*b**2+4*b*r**3+b**4);
+         den = 7**q*24*b**4;
+       }
+   }
+   function printnumd()public view returns(uint,uint){
+       return (num,den);
+   }
+
+   function printqr()public view returns(uint,uint){
+       return (q,r);
+   }
+   function uinttoint() public returns(int,int){
+       n = int(num);
+       d = int(den);
+   }
+}
