@@ -1,0 +1,88 @@
+pragma solidity 0.5.5;
+// for 4 feature and binary class
+contract Activation{
+
+    int d;int c1;int c2;int c3;int c4; int Y0; int Y1;
+    int P0; int P1;
+
+     int[] c; 
+
+    function reduction(int b,int c,int d) public returns(int,int,int){
+        if(b>1000000000000000|| b <1000000000000000 && c>1000000000000000||c<1000000000000000 && d>1000000000000|| d<1000000000000000){
+            b = b/1000000000000000; c = c/1000000000000000; d = d/1000000000000000;
+        }else if(b>1000000000000 ||b<1000000000000 && c>1000000000000||c<1000000000000 && d>1000000000000||c<1000000000000 ){
+            b = b/1000000000000; c = c/1000000000000; d = d/1000000000000;
+        }else if(b>1000000000 ||b<1000000000 && c>1000000000||c<1000000000 && d>1000000000||c<1000000000){
+            b = b/1000000000; c = c/1000000000; d = d/1000000000;
+        }else if(b>1000000 ||b<1000000 && c>1000000||c<1000000 && d>1000000||c<1000000){
+            b = b/1000000; c = c/1000000; d = d/1000000;
+        }else if(b>1000 ||b<1000 && c>1000||c<1000 && d>1000||c<1000){
+            b = b/1000; c = c/1000; d = d/1000;
+        }else{
+            b =b; c =c; d =d;
+        }
+        return(b,c,d);
+
+    }
+
+
+// save all the gasussian probability computations for all classes and computer probabilty values
+    
+    uint q; uint r; int en = 19; int ed =7; uint num; uint den;  
+   
+    function get_sigmoid(int C, int D)public {
+        int Q; int R; int enumR; int edenR;
+        Q = int(C/D);
+        R = C%D;
+        edenR = 24*(D*D*D*D);
+        enumR = 24*D*D*D*D+ R*24*D*D*D+R*R*12*D*D+R*R*R*4*D+R*R*R*R;
+        
+        if(Q==0){
+            P0 = edenR;
+            P1 = enumR;
+        }
+        else  if(Q==1){
+            P0 = 7*edenR;
+            P1 = 19*enumR;
+        }else if(Q==2){
+            P0 = 49*edenR;
+            P1 = 361*enumR;
+        }else if(Q==3){
+            P0 = 343*edenR;
+            P1 = 6859*enumR;
+        }else if(Q==4){
+            P0 = 2401*edenR;
+            P1 = 130321*enumR;
+        }else if(Q==5){
+            P0 = 16807*edenR;
+            P1 = 2476099*enumR;
+        }else if(Q==6){
+            P0 = 117649*edenR;
+            P1 = 47045881*enumR;
+        }else if(Q==7){
+            P0 = 823543*edenR;
+            P1 = 893871939*enumR;
+        }else if(Q==8){
+            P0 = 5764801*edenR;
+            P1 = 169833563041*enumR;
+        }else if(Q==9){
+            P0 = 40353607*edenR;
+            P1 = 322687697779*enumR;
+        }else if(Q==10){
+            P0 = 282475249*edenR;
+            P1 = 6131066257801*enumR;
+        }else{
+            P0 = 1*edenR;
+            P1 = 30000*enumR;
+        }
+    }
+
+    function set_sigmoid() public view returns(int,int){
+        return(P0,P1);
+    }
+
+    function get_softmax(int x, int y) public {
+        
+    }
+}
+
