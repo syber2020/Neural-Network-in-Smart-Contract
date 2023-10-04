@@ -1,0 +1,96 @@
+pragma solidity "0.8.6";
+// SPDX-License-Identifier: MIT
+contract test_sigmoid{
+    int num; int den;
+    function power(int x, int y) public view returns(int){
+        int mul =1;
+        if (y>0)
+            for (int i =0 ; i<y; i++){
+                mul = mul*x;
+            }
+        else{
+            for (int i =0 ; i>y; i--){
+                mul = mul*x;
+            }
+        }
+        return mul;
+    }
+    
+
+    function testcase1(int x, int y) public {
+            int q; int r; int m; int n;
+            q = x/y ;
+            r = x%y;
+            m = power(19,q);
+            n = power(7,q);
+            num= m*24*(y*y*y*y);
+            den= m*24*(y*y*y*y)+ n*(24*(y*y*y*y)-24*r*(y*y*y)+12*(r*r)*(y*y)-4*y*(r*r*r)+(r*r*r*r));
+    }
+    function testcase2(int x, int y) public {
+           num= 24*y*y*y*y;
+           den= (48*y*y*y*y) - (24*x*y*y*y) + (12*x*x*y*y) - (4*y*x*x*x) + (x*x*x*x);
+    }
+
+    // function testcase3(int x, int y) public {
+    //        num= 24*y*y*y*y;
+    //        den= (48*y*y*y*y) + (24*x*y*y*y) + (12*x*x*y*y) + (4*y*x*x*x) + (x*x*x*x);
+    // }
+
+    function testcase4(int x, int y) public {
+            int q; int r;
+            q = x/y;  r = x%y; int m; int n;
+            m = power(19,q);
+            n = power(7,q);
+            num = (24*y*y*y*y)*(n);
+            den = (24*y*y*y*y)*(n)+((24*y*y*y*y)+(24*r*y*y*y)+(12*r*r*y*y)+(4*y*r*r*r)+(r*r*r*r))*(m);
+    }
+    function sigmoid_act(int x, int y)  internal returns(int,int) {
+        // int tf; int tg; int th;
+            
+        if((x/y)>=1)
+            {
+                testcase1(x,y);
+            }    
+        else if(x/y==0 && (x*y>0 || x*y<0) )
+            {
+                testcase2(x,y);
+            } 
+        // else if(x/y==0 && x*y<0)
+        //     {
+        //         testcase3(x,y);
+        //     }   
+        else if(x/y<=-1)
+            {
+                testcase4(x,y);
+            }
+
+        return(num,den);
+    }
+
+    // function tanh_act(int x, int y) public returns(int,int){}
+    // function relu_act() public returns(int,int){}
+    // function softmax() public returns(int,int){}
+    function div(int x,int y) public view returns(int,int){
+        int q; int r;
+        q = x/y;
+        r = x%y;
+        return(q,r);
+    }
+    // function pow(int x,int y) public view returns(int){}
+    function sigmoid( int x, int y) public returns(int,int){
+        int a; int b;
+        (a,b) =  sigmoid_act(x,y);
+    }
+    function sigprint() public view returns(int,int){
+        return(num,den);
+    }
+
+    function divtest(int o, int p) public view returns(int,int){
+        int z; int k;
+        
+        z = o/p;
+        k = o*p;
+        return (z,k);
+    }
+
+}

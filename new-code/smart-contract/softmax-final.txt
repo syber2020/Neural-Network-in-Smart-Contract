@@ -1,0 +1,86 @@
+pragma solidity 0.5.5;
+// for 4 feature and binary class
+
+contract softmax{
+    //Get the result for e^x and store to numerator
+    mapping(int=>int) public exp;
+    int enumR; int edenR; 
+    int snum; int sden;
+    int numsum; int densum; uint exposum; 
+    uint n; uint d; 
+    int anum; int aden;
+    uint[] expo; 
+    uint[] softnum; uint[] softden;
+    // function upd_expos(int c, int d) public {
+    //     exp[c] = d;
+    // }
+    //need to implement e^x first 
+
+    function getexpon(int C, int D, uint k, uint j) public{
+        int Q; int R; int enumR; int edenR; 
+        Q = int(C/D);
+        R = C%D;
+        
+        // edenR = 24*(D*D*D*D);
+        // enumR = 24*D*D*D*D+ R*24*D*D*D+R*R*12*D*D+R*R*R*4*D+R*R*R*R;
+        
+        if(Q<0){
+            uint l = k/j;
+            uint m = k%j;
+            d = 19**l*(24*j**4+ m*24*j**3+m**2*12*j**2+m**3*4*j+m**4);
+            n = 7**l*24*j**4;
+        }
+        else if(Q==0 && C*D>0){
+            n = 24*j**4+ k*24*j**3+k**2*12*j**2+k**3*4*j+k**4;
+            d = 24*j**4;
+        }
+        else if(Q==0 && C*D<0){
+            d = 24*j**4+ k*24*j**3+k**2*12*j**2+k**3*4*j+k**4;
+            n = 24*j**4;
+        }
+        else{
+            uint l = k/j;
+            uint m = k%j;
+            n = 19**l*(24*j**4+ m*24*j**3+m**2*12*j**2+m**3*4*j+m**4);
+            d = 7**l*24*j**4;
+        }
+        expo.push(n/d);
+    }
+
+    function setexpon() public view returns(uint){
+        return (n/d);
+    }
+    function setallexpon() public view returns(uint[] memory){
+        return (expo);
+    }
+    //Add all e^x and store to denominator
+
+    // function addition(int a, int b, int c, int d)public returns(int,int){
+    //     int dn = b*d;
+    //     int nn = (dn/b *a) + (dn/d *c);
+    //     return (nn,dn);
+    // }
+    function sum_exp() public {
+        exposum=0;
+        for(uint i =0; i < expo.length; i++){
+          exposum = exposum+expo[i];  
+        }
+    }
+    function set_sumexp() public view returns(uint){
+        return(exposum);
+    }
+    //divide the numerator with denominator 
+    function get_softmax() public{
+        
+        for(uint i=0;i<expo.length;i++){
+            softnum.push(expo[i]);
+            softden.push(exposum);
+        }
+        
+        // return(anum,aden);
+    }
+    function set_softmax() public view returns(uint[] memory,uint[] memory){
+        return(softnum,softden);
+    }
+    function del_arr() public{delete  softnum; delete softden; delete expo; }
+}

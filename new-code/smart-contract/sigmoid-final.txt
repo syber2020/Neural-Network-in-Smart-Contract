@@ -1,0 +1,44 @@
+pragma solidity "0.5.5";
+// SPDX-License-Identifier: MIT
+contract activation {
+     uint num; uint den;
+    function sigmoid_act(int x, int y, uint a, uint b) public {
+        uint q; uint r; 
+        if((x/y)>=1)
+            {
+            q = a/b ;
+            r = a%b;
+            num= (19**q)*24*(b**4);
+            den= (19**q)*24*(b**4)+(7**q)*(24*(b**4)-24*r*(b**3)+12*(r**2)*(b**2)-4*b*(r**3)+(r**4));}    
+        else if(x/y==0 && x*y>0)
+            {
+            num= 24*b**4;
+            den= (48*b**4)-(24*a*b**3)+(12*a**2*b**2)-(4*b*a**3)+a**4;
+            } 
+        else if(x/y==0 && x*y<0)
+            {
+            num= 24*b**4;
+            den= (48*b**4)+(24*a*b**3)+(12*a**2*b**2)+(4*b*a**3)+a**4;
+            }   
+        else if(x/y<=-1)
+            {
+            q = a/b;  r = a%b;
+            num = (24*b**4)*(7**q);
+            den = (24*b**4)*(7**q)+((24*b**4)+(24*r*b**3)+(12*r**2*b**2)+4*b*r**3+r**4)*(19**q);}
+
+    }
+
+    // function tanh_act(int x, int y) public returns(int,int){}
+    // function relu_act() public returns(int,int){}
+    // function softmax() public returns(int,int){}
+    function div(int x,int y) public view returns(int,int){
+        int q; int r;
+        q = x/y;
+        r = x%y;
+        return(q,r);
+    }
+    // function pow(int x,int y) public view returns(int){}
+    function sigprint() public view returns(uint,uint){
+        return(num,den);
+    }
+}

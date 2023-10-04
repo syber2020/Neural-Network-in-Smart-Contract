@@ -1,13 +1,12 @@
 pragma solidity 0.5.5;
 
 contract nn_layer{
-    int n11; int n12; int n13; int n14;int n15; int n16; int n17; int n18;
+    int n11; int n12; int n13; int n14;
 
 //multiply inputs to weights in Layer 1
     function multiply_layer1(int[] memory x, int[] memory w1,
     int[] memory w2, int[] memory w3, int[] memory w4, 
-    int[] memory w5, int[] memory w6, int[] memory w7,
-    int[] memory w8,int[] memory b1) public {
+    int[] memory b1) public {
         n11=0; n12=0; n13=0;n14=0;
         for (uint i=0;i<x.length; i++){
             
@@ -15,16 +14,11 @@ contract nn_layer{
             n12= n12+ x[i]*w2[i];
             n13= n13+ x[i]*w3[i];
             n14= n14+ x[i]*w4[i];
-            n15 = n15+ x[i]*w5[i];
-            n16= n16+ x[i]*w6[i];
-            n17= n17+ x[i]*w7[i];
-            n18= n18+ x[i]*w8[i];
         }
         n11=n11+b1[0]; n12=n12+b1[1]; n13=n13+b1[2];n14=n14+b1[3];
-        n16=n15+b1[4]; n16=n16+b1[5]; n17=n17+b1[6];n18=n18+b1[7];
     }
-    function print_l1() public view returns(int,int,int,int,int,int,int,int){
-        return(n11,n12,n13,n14,n15,n16,n17,n18);
+    function print_l1() public view returns(int,int,int,int){
+        return(n11,n12,n13,n14);
     }
 //get sigmoid outputs
 
